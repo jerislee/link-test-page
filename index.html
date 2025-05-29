@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的網址收藏</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px 10px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 8px;
+            margin-bottom: 20px;
+            gap: 8px;
+        }
+
+        .tab {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: rgba(255, 255, 255, 0.95);
+            color: #2d3748;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+
+        .tab:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .url-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .url-list.hidden {
+            display: none;
+        }
+
+        .url-item {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .url-item::before {
+            content: attr(data-number);
+            position: absolute;
+            top: -8px;
+            left: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .url-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+
+        .url-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .url-link {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 0.95rem;
+            color: #4a5568;
+            word-break: break-all;
+            margin-bottom: 15px;
+            transition: all 0.2s ease;
+        }
+
+        .url-link:hover {
+            border-color: #cbd5e0;
+            background: #edf2f7;
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+
+        .copy-btn.copied {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #2d3748;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .url-item {
+                padding: 16px;
+            }
+            
+            .url-title {
+                font-size: 1.2rem;
+            }
+        }
+
+        .add-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .add-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AIGC測試網址清單</h1>
+            <p>請選擇你想要測試的連結進行複製</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('partner')">合作商家</button>
+            <button class="tab" onclick="switchTab('non-partner')">非合作商家</button>
+        </div>
+
+        <!-- 合作商家列表 -->
+        <div class="url-list" id="partnerList">
+            <div class="url-item" data-number="S01">
+                <div class="url-title">合作商家 A</div>
+                <div class="url-link">https://partner-a.example.com</div>
+                <button class="copy-btn" onclick="copyUrl(this, 'https://partner-a.example.com')">
+                    📋 複製網址
+                </button>
+            </div>
+
+            <div class="url-item" data-number="S02">
+                <div class="url-title">合作商家 B</div>
+                <div class="url-link">https://partner-b.example.com</div>
+                <button class="copy-btn" onclick="copyUrl(this, 'https://partner-b.example.com')">
+                    📋 複製網址
+                </button>
+            </div>
+
+            <div class="url-item" data-number="S03">
+                <div class="url-title">合作商家 C</div>
+                <div class="url-link">https://partner-c.example.com</div>
+                <button class="copy-btn" onclick="copyUrl(this, 'https://partner-c.example.com')">
+                    📋 複製網址
+                </button>
+            </div>
+        </div>
+
+        <!-- 非合作商家列表 -->
+        <div class="url-list hidden" id="nonPartnerList">
+            <div class="url-item" data-number="N01">
+                <div class="url-title">非合作商家 X</div>
+                <div class="url-link">https://non-partner-x.example.com</div>
+                <button class="copy-btn" onclick="copyUrl(this, 'https://non-partner-x.example.com')">
+                    📋 複製網址
+                </button>
+            </div>
+
+            <div class="url-item" data-number="N02">
+                <div class="url-title">非合作商家 Y</div>
+                <div class="url-link">https://non-partner-y.example.com</div>
+                <button class="copy-btn" onclick="copyUrl(this, 'https://non-partner-y.example.com')">
+                    📋 複製網址
+                </button>
+            </div>
+
+            <div class="url-item" data-number="N03">
+                <div class="url-title">非合作商家 Z</div>
+                <div class="url-link">https://non-partner-z.example.com</div>
+                <button class="copy-btn" onclick="copyUrl(this, 'https://non-partner-z.example.com')">
+                    📋 複製網址
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 複製成功提示 -->
+    <div class="toast" id="toast">✅ 網址已複製到剪貼簿！</div>
+
+    <!-- 新增按鈕（預留功能） -->
+    <button class="add-btn" onclick="addNewUrl()" title="新增網址">+</button>
+
+    <script>
+        let currentTab = 'partner';
+        let partnerCounter = 4; // 下一個合作商家編號 (S04)
+        let nonPartnerCounter = 4; // 下一個非合作商家編號 (N04)
+
+        // 切換分頁功能
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // 更新分頁按鈕狀態
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // 顯示/隱藏對應列表
+            const partnerList = document.getElementById('partnerList');
+            const nonPartnerList = document.getElementById('nonPartnerList');
+            
+            if (tab === 'partner') {
+                partnerList.classList.remove('hidden');
+                nonPartnerList.classList.add('hidden');
+            } else {
+                partnerList.classList.add('hidden');
+                nonPartnerList.classList.remove('hidden');
+            }
+            
+            // 重新播放進入動畫
+            const activeList = tab === 'partner' ? partnerList : nonPartnerList;
+            const items = activeList.querySelectorAll('.url-item');
+            items.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    item.style.transition = 'all 0.5s ease';
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        }
+
+        // 複製網址功能
+        async function copyUrl(button, url) {
+            try {
+                await navigator.clipboard.writeText(url);
+                
+                // 按鈕動畫效果
+                button.classList.add('copied');
+                button.innerHTML = '✅ 已複製！';
+                
+                // 顯示提示訊息
+                showToast();
+                
+                // 2秒後恢復按鈕
+                setTimeout(() => {
+                    button.classList.remove('copied');
+                    button.innerHTML = '📋 複製網址';
+                }, 2000);
+                
+            } catch (err) {
+                console.error('複製失敗:', err);
+                // 降級方案：使用舊的複製方法
+                fallbackCopyUrl(url);
+            }
+        }
+
+        // 降級複製方法（適用於較舊的瀏覽器）
+        function fallbackCopyUrl(url) {
+            const textArea = document.createElement('textarea');
+            textArea.value = url;
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                showToast();
+            } catch (err) {
+                console.error('降級複製也失敗:', err);
+                alert('複製失敗，請手動複製網址');
+            }
+            
+            document.body.removeChild(textArea);
+        }
+
+        // 顯示複製成功提示
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // 新增網址功能
+        function addNewUrl() {
+            const title = prompt('請輸入網址標題:');
+            if (!title) return;
+            
+            const url = prompt('請輸入網址:');
+            if (!url) return;
+            
+            // 簡單的網址格式檢查
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                alert('請輸入完整的網址（包含 http:// 或 https://）');
+                return;
+            }
+            
+            // 確定要新增到哪個分類
+            const isPartner = confirm('是否為合作商家？\n確定 = 合作商家\n取消 = 非合作商家');
+            
+            let listId, number, counter;
+            if (isPartner) {
+                listId = 'partnerList';
+                number = 'S' + String(partnerCounter).padStart(2, '0');
+                partnerCounter++;
+            } else {
+                listId = 'nonPartnerList';
+                number = 'N' + String(nonPartnerCounter).padStart(2, '0');
+                nonPartnerCounter++;
+            }
+            
+            // 建立新的網址項目
+            const urlList = document.getElementById(listId);
+            const newItem = document.createElement('div');
+            newItem.className = 'url-item';
+            newItem.setAttribute('data-number', number);
+            newItem.innerHTML = `
+                <div class="url-title">${title}</div>
+                <div class="url-link">${url}</div>
+                <button class="copy-btn" onclick="copyUrl(this, '${url}')">
+                    📋 複製網址
+                </button>
+            `;
+            
+            urlList.appendChild(newItem);
+            
+            // 如果新增的項目不在當前分頁，自動切換
+            if ((isPartner && currentTab !== 'partner') || (!isPartner && currentTab !== 'non-partner')) {
+                const targetTab = isPartner ? 'partner' : 'non-partner';
+                document.querySelector(`[onclick="switchTab('${targetTab}')"]`).click();
+            }
+            
+            // 捲動到新項目
+            setTimeout(() => {
+                newItem.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }
+
+        // 頁面載入時的動畫效果
+        window.addEventListener('load', () => {
+            const items = document.querySelectorAll('#partnerList .url-item');
+            items.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    item.style.transition = 'all 0.5s ease';
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>
