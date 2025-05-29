@@ -48,6 +48,39 @@
             padding: 8px;
             margin-bottom: 20px;
             gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .tabs.sticky {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 999;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            max-width: 400px;
+            width: calc(100% - 40px);
+        }
+
+        .tabs.sticky .tab {
+            color: #4a5568;
+        }
+
+        .tabs.sticky .tab:hover:not(.active) {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+
+        .tabs-placeholder {
+            height: 0;
+            transition: height 0.3s ease;
+        }
+
+        .tabs-placeholder.active {
+            height: 56px;
         }
 
         .tab {
@@ -230,10 +263,13 @@
             <p>請選擇你想要測試的連結進行複製</p>
         </div>
 
-        <div class="tabs">
+        <div class="tabs" id="tabs">
             <button class="tab active" onclick="switchTab('partner')">合作商家</button>
             <button class="tab" onclick="switchTab('non-partner')">非合作商家</button>
         </div>
+
+        <!-- 當 tabs 固定時用來佔位的元素 -->
+        <div class="tabs-placeholder" id="tabsPlaceholder"></div>
 
         <!-- 合作商家列表 -->
         <div class="url-list" id="partnerList">
@@ -458,6 +494,37 @@
                     item.style.transform = 'translateY(0)';
                 }, index * 100);
             });
+        });
+
+        // 滾動時固定 Tab 功能
+        let isTabsSticky = false;
+        const tabs = document.getElementById('tabs');
+        const tabsPlaceholder = document.getElementById('tabsPlaceholder');
+        const header = document.querySelector('.header');
+
+        window.addEventListener('scroll', () => {
+            const headerBottom = header.offsetTop + header.offsetHeight + 20; // 20px 是 margin-bottom
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+            if (scrollTop > headerBottom && !isTabsSticky) {
+                // 固定 Tab
+                isTabsSticky = true;
+                tabs.classList.add('sticky');
+                tabsPlaceholder.classList.add('active');
+            } else if (scrollTop <= headerBottom && isTabsSticky) {
+                // 取消固定 Tab
+                isTabsSticky = false;
+                tabs.classList.remove('sticky');
+                tabsPlaceholder.classList.remove('active');
+            }
+        });
+
+        // 防止快速滾動時的閃爍
+        window.addEventListener('resize', () => {
+            if (isTabsSticky) {
+                tabs.style.left = '50%';
+                tabs.style.transform = 'translateX(-50%)';
+            }
         });
     </script>
 </body>
