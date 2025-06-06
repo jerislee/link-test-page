@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>藏王滑雪行程方案比較</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .card-content {
+            padding: 30px;
+        }
+
+        .price-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .price-card {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            color: white;
+            transition: transform 0.3s ease;
+        }
+
+        .price-card:hover {
+            transform: scale(1.05);
+        }
+
+        .price-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .price {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .price-rank {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.95rem;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .comparison-table td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background-color: #f8f9ff;
+        }
+
+        .comparison-table tr:hover {
+            background-color: #e8f0ff;
+            transition: background-color 0.3s ease;
+        }
+
+        .route-cell {
+            font-weight: bold;
+            color: #4facfe;
+        }
+
+        .pros-cons {
+            text-align: left;
+            line-height: 1.6;
+        }
+
+        .pros {
+            color: #27ae60;
+            margin-bottom: 10px;
+        }
+
+        .cons {
+            color: #e74c3c;
+        }
+
+        .recommendation {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        .recommendation h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .recommendation-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .recommendation-item {
+            background: rgba(255,255,255,0.8);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #4facfe;
+        }
+
+        .flight-details {
+            background: #f8f9ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .flight-details h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .flight-route {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+
+        .flight-route span {
+            background: #667eea;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin: 2px;
+        }
+
+        .arrow {
+            margin: 0 10px;
+            font-size: 1.2rem;
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .comparison-table {
+                font-size: 0.8rem;
+            }
+            
+            .comparison-table th,
+            .comparison-table td {
+                padding: 10px 8px;
+            }
+            
+            .price-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎿 藏王滑雪行程方案比較</h1>
+            <p>選擇最適合你的滑雪之旅</p>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                💰 費用比較
+            </div>
+            <div class="card-content">
+                <div class="price-section">
+                    <div class="price-card">
+                        <h3>方案1：台灣直飛仙台</h3>
+                        <div class="price">19,000-22,000</div>
+                        <div class="price-rank">最貴 💸</div>
+                    </div>
+                    <div class="price-card">
+                        <h3>方案2：日航羽田轉山形</h3>
+                        <div class="price">16,000-17,000</div>
+                        <div class="price-rank">中等 💵</div>
+                    </div>
+                    <div class="price-card">
+                        <h3>方案3：東京轉新幹線</h3>
+                        <div class="price">13,500-15,000</div>
+                        <div class="price-rank">最便宜 💰</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                📋 完整方案比較表
+            </div>
+            <div class="card-content">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>項目</th>
+                            <th>方案1：台灣直飛仙台</th>
+                            <th>方案2：日航羽田轉山形</th>
+                            <th>方案3：東京轉新幹線</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>💰 機票費用</strong></td>
+                            <td>19,000-22,000</td>
+                            <td>16,000-17,000</td>
+                            <td>8,500-10,000</td>
+                        </tr>
+                        <tr>
+                            <td><strong>🚌 其他交通費</strong></td>
+                            <td>仙台⇄山形巴士</td>
+                            <td>機場轉機</td>
+                            <td>新幹線來回5,000</td>
+                        </tr>
+                        <tr>
+                            <td><strong>💸 總交通費用</strong></td>
+                            <td style="color: #e74c3c; font-weight: bold;">~20,500</td>
+                            <td style="color: #f39c12; font-weight: bold;">~16,500</td>
+                            <td style="color: #27ae60; font-weight: bold;">13,500-15,000</td>
+                        </tr>
+                        <tr>
+                            <td><strong>📊 價格排名</strong></td>
+                            <td style="color: #e74c3c;">最貴 💸</td>
+                            <td style="color: #f39c12;">中等 💵</td>
+                            <td style="color: #27ae60;">最便宜 💰</td>
+                        </tr>
+                        <tr>
+                            <td><strong>🛫 交通路線</strong></td>
+                            <td class="route-cell">桃園 ✈️ 仙台 🚌 山形</td>
+                            <td class="route-cell">松山 ✈️ 羽田 ✈️ 山形</td>
+                            <td class="route-cell">桃園 ✈️ 東京 🚄 山形</td>
+                        </tr>
+                        <tr>
+                            <td><strong>航空公司</strong></td>
+                            <td>長榮/星宇</td>
+                            <td>日航</td>
+                            <td>廉航/傳統航空</td>
+                        </tr>
+                        <tr>
+                            <td><strong>轉乘次數</strong></td>
+                            <td>1次（巴士）</td>
+                            <td>1次（轉機）</td>
+                            <td>1次（新幹線）</td>
+                        </tr>
+                        <tr>
+                            <td><strong>便利性</strong></td>
+                            <td>⭐⭐⭐⭐⭐</td>
+                            <td>⭐⭐⭐⭐</td>
+                            <td>⭐⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td><strong>可用滑雪天數</strong></td>
+                            <td>3天</td>
+                            <td>3天</td>
+                            <td>3天</td>
+                        </tr>
+                        <tr>
+                            <td><strong>市區觀光</strong></td>
+                            <td>仙台市區1天</td>
+                            <td>無市區時間</td>
+                            <td>東京市區1晚</td>
+                        </tr>
+                        <tr>
+                            <td><strong>行程彈性</strong></td>
+                            <td>⭐⭐⭐⭐⭐</td>
+                            <td>⭐⭐⭐</td>
+                            <td>⭐⭐⭐⭐</td>
+                        </tr>
+                        <tr>
+                            <td><strong>✅ 主要優點</strong></td>
+                            <td class="pros-cons">
+                                <div class="pros">
+                                    • 直飛最輕鬆，時間效率最高<br>
+                                    • 可體驗仙台市區<br>
+                                    • 行程最完整<br>
+                                    • 航班時間選擇多<br>
+                                    • 不用轉機省時省力
+                                </div>
+                            </td>
+                            <td class="pros-cons">
+                                <div class="pros">
+                                    • 直達山形省時間<br>
+                                    • 羽田轉機相對方便<br>
+                                    • 比直飛便宜3,000-5,000元<br>
+                                    • 多人可在山形機場直接租車
+                                </div>
+                            </td>
+                            <td class="pros-cons">
+                                <div class="pros">
+                                    • 費用最便宜，廉航8,500起跳<br>
+                                    • 可體驗東京市區<br>
+                                    • 新幹線體驗佳<br>
+                                    • 航班選擇多（廉航+傳統航空）
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>❌ 主要缺點</strong></td>
+                            <td class="pros-cons">
+                                <div class="cons">
+                                    • 費用最高<br>
+                                    • 仙台到山形需額外巴士時間
+                                </div>
+                            </td>
+                            <td class="pros-cons">
+                                <div class="cons">
+                                    • 需要轉機<br>
+                                    • 頭尾各少一天行程<br>
+                                    • 無法體驗仙台市區<br>
+                                    • 需在羽田過夜
+                                </div>
+                            </td>
+                            <td class="pros-cons">
+                                <div class="cons">
+                                    • 轉乘較複雜<br>
+                                    • 無法體驗仙台<br>
+                                    • 東京到山形車程較長
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                🎯 選擇建議
+            </div>
+            <div class="card-content">
+                <div class="recommendation">
+                    <h3>如果你重視...</h3>
+                    <div class="recommendation-list">
+                        <div class="recommendation-item">
+                            <strong>💰 預算考量</strong><br>
+                            → 選擇方案3（東京轉新幹線）
+                        </div>
+                        <div class="recommendation-item">
+                            <strong>⏰ 時間效率</strong><br>
+                            → 選擇方案1（台灣直飛仙台）
+                        </div>
+                        <div class="recommendation-item">
+                            <strong>🏂 純滑雪體驗</strong><br>
+                            → 選擇方案2（日航羽田轉山形）
+                        </div>
+                        <div class="recommendation-item">
+                            <strong>🗼 東京體驗</strong><br>
+                            → 選擇方案3（東京轉新幹線）
+                        </div>
+                        <div class="recommendation-item">
+                            <strong>🍜 仙台美食</strong><br>
+                            → 選擇方案1（台灣直飛仙台）
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                ✈️ 方案2詳細班機時間（日航）
+            </div>
+            <div class="card-content">
+                <div class="flight-details">
+                    <h4>推薦組合（純滑雪導向）</h4>
+                    <div class="flight-route">
+                        <strong>去程：</strong>
+                        <span>1/10 松山→羽田 15:35-19:25</span>
+                        <span class="arrow">→</span>
+                        <span>1/11 羽田→山形 07:30-08:30</span>
+                    </div>
+                    <p style="margin: 10px 0; color: #666;">（羽田過夜一晚）</p>
+                    
+                    <div class="flight-route">
+                        <strong>回程：</strong>
+                        <span>1/14 山形→羽田 19:15-20:20</span>
+                        <span class="arrow">→</span>
+                        <span>1/15 羽田→松山 08:40-11:40</span>
+                    </div>
+                    <p style="margin: 10px 0; color: #666;">（羽田過夜一晚）</p>
+                    
+                    <p style="margin-top: 15px; font-weight: bold; color: #667eea;">
+                        費用：23,888元/人（回程商務艙）
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                📝 最終建議
+            </div>
+            <div class="card-content">
+                <p style="font-size: 1.1rem; line-height: 1.8; text-align: center; color: #2c3e50;">
+                    如果預算是主要考量，<strong style="color: #e74c3c;">方案3廉航飛東京最省錢</strong>；<br>
+                    如果重視時間效率和輕鬆度，<strong style="color: #27ae60;">方案1直飛仙台最佳</strong>；<br>
+                    如果想純滑雪且省一些錢，<strong style="color: #3498db;">方案2是不錯的折衷選擇</strong>。
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
